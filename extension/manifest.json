@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Vorlix Web Bridge",
+  "version": "1.0.0",
+  "description": "AI-powered browser control via ARIA roles — part of The AI Hand.",
+  "permissions": ["nativeMessaging", "activeTab"],
+  "background": {
+    "service_worker": "dist/background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["dist/content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "Vorlix Web Bridge"
+  }
+}
