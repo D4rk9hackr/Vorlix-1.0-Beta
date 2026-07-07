@@ -10,7 +10,7 @@ from core.orchestrator import Orchestrator
 from core.tier_base import TierRequest
 from skills.registry import list_skills, activate_skill
 
-VERSION = "Vorlix 1.0 Beta"
+VERSION = "Vorlix 1.0.0-beta.4"
 
 
 def _get_workspace() -> str:

@@ -10,7 +10,7 @@ VORLIX_BANNER = r"""
 ║        | |    | | | (_| |   | | |   \__ \            ║
 ║        |_|    |_|  \__,_|   |_|_|   |___/            ║
 ║                                                      ║
-║     The AI Hand — Control Layer Engine v1.0 Beta     ║
+║     The AI Hand — Control Layer Engine v1.0.0-beta.4     ║
 ║     ⚡ Give your AI a real hand                      ║
 ║                                                      ║
 ╚══════════════════════════════════════════════════════╝
