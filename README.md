@@ -162,7 +162,9 @@ vorlix/
 
 ## License
 
-GNU General Public License v3.0
+Vorlix Source-Available Commercial License v1.0 — see [LICENSE](./LICENSE) for full terms.
+
+Personal, educational, and non-commercial use is free. Any commercial use (selling, sublicensing, or offering this software as part of a paid product or service) requires a separate license from the copyright holder. Contact: YOUR_EMAIL_HERE
 
 ---
 
