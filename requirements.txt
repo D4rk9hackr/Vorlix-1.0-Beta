@@ -1,0 +1,8 @@
+# Core deps (always required)
+# — none yet; core/ and tiers below Computer Vision use only the stdlib —
+
+# Computer Vision tier (Tier 4 — lazy-imported, only needed if you use it)
+opencv-contrib-python>=4.8   # note: contrib build, NOT opencv-python — TrackerCSRT lives here
+pyautogui>=0.9.54
+mss>=9.0.1
+numpy>=1.24

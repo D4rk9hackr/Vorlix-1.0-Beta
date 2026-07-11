@@ -69,6 +69,7 @@ def activate_skill(name: str) -> Tuple[bool, str, Optional[AutomationTier]]:
             "browser_bridge": None,
             "computer_vision": "computer_vision_tier",
             "time_reminders": "time_reminders_tier",
+            "auto_debug": "file_io_tier",
         }
         module_name = tier_map.get(name)
         if not module_name:

@@ -8,7 +8,7 @@ from vorlix_cli.main import VERSION
 
 class TestCLI:
     def test_version_string(self):
-        assert VERSION == "Vorlix 1.0 Beta", f"Unexpected version: {VERSION}"
+        assert VERSION == "Vorlix 1.0.0-beta.4", f"Unexpected version: {VERSION}"
 
     def test_import_main(self):
         """Verify the main module can be imported without errors."""

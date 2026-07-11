@@ -43,7 +43,7 @@ class ComputerVisionTier(AutomationTier):
         except ImportError as e:
             return TierResponse(
                 result=TierResult.BLOCKED,
-                message=f"Missing dependency: {e}. Install with: pip install opencv-python pyautogui mss numpy",
+                message=f"Missing dependency: {e}. Install with: pip install opencv-contrib-python pyautogui mss numpy",
             )
 
         if tool == "computer_vision.click_target":
@@ -142,11 +142,11 @@ class ComputerVisionTier(AutomationTier):
         except ImportError as e:
             return TierResponse(
                 result=TierResult.BLOCKED,
-                message=f"Missing dependency: {e}. Install with: pip install opencv-python pyautogui mss numpy",
+                message=f"Missing dependency: {e}. Install with: pip install opencv-contrib-python pyautogui mss numpy",
             )
         finally:
             if self._loaded:
-                del frame, template, result, screenshot
+                frame = template = result = screenshot = None
                 gc.collect()
 
     async def _track_target(self, args: dict) -> TierResponse:
@@ -229,5 +229,5 @@ class ComputerVisionTier(AutomationTier):
                 message=f"Missing dependency: {e}",
             )
         finally:
-            del frame, template
+            frame = template = None
             gc.collect()
