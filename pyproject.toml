@@ -14,3 +14,15 @@ vorlix = "vorlix_cli.main:main"
 
 [project.optional-dependencies]
 cv = ["opencv-contrib-python>=4.8", "pyautogui>=0.9.54", "mss>=9.0.1", "numpy>=1.24"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short -q"
+
+# Environment: the benchmark (test_benchmark.py) needs a display for
+# window tools and CV tier. On Linux, set DISPLAY before running:
+#   DISPLAY=:2.0 pytest tests/test_benchmark.py -v

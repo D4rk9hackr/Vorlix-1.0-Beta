@@ -6,31 +6,31 @@ Comparison of Vorlix (tiered escalation) against a simulated vision-based Comput
 
 | Task | Vorlix tier | Vorlix tokens | Vorlix time (ms) | Sim CV tokens | Sim CV time (ms) | Token savings | Time savings |
 |---|---|---|---|---|---|---|---|
-| Open a specific application | terminal | 200 | 30 | 4500 | 9000 | +96% | +100% |
-| Check if a process is running | system_query | 100 | 15 | 2250 | 4500 | +96% | +100% |
-| Click a button in a browser (via ARIA) | human (escalated) | 300 | 4455 | 6750 | 13500 | +96% | +67% |
-| Read a value from a config file | file_io | 100 | 15 | 2250 | 4500 | +96% | +100% |
-| Focus a specific window | system_query | 200 | 167 | 4500 | 9000 | +96% | +98% |
-| Run a terminal command and read output | terminal | 100 | 27 | 2250 | 4500 | +96% | +99% |
-| Fill a text field in a browser form | human (escalated) | 300 | 37 | 6750 | 13500 | +96% | +100% |
-| List currently open windows | system_query | 100 | 181 | 2250 | 4500 | +96% | +96% |
-| Create a scheduled reminder | time_reminders | 200 | 21 | 4500 | 9000 | +96% | +100% |
-| CV-fallback task (legacy app, no accessibility) | computer_vision | 300 | 4481 | 6750 | 13500 | +96% | +67% |
-| **Total (10 tasks)** | | **1900** | **9429** | **42750** | **85500** | **+96%** | **+89%** |
+| Open a specific application | terminal | 200 | 112 | 4500 | 9000 | +96% | +99% |
+| Check if a process is running | system_query | 100 | 73 | 2250 | 4500 | +96% | +98% |
+| Click a button in a browser (via ARIA) | human (escalated) | 300 | 7336 | 6750 | 13500 | +96% | +46% |
+| Read a value from a config file | file_io | 100 | 9 | 2250 | 4500 | +96% | +100% |
+| Focus a specific window | system_query | 200 | 177 | 4500 | 9000 | +96% | +98% |
+| Run a terminal command and read output | terminal | 100 | 22 | 2250 | 4500 | +96% | +100% |
+| Fill a text field in a browser form | human (escalated) | 300 | 18 | 6750 | 13500 | +96% | +100% |
+| List currently open windows | system_query | 100 | 85 | 2250 | 4500 | +96% | +98% |
+| Create a scheduled reminder | time_reminders | 200 | 19 | 4500 | 9000 | +96% | +100% |
+| CV-fallback task (legacy app, no accessibility) | computer_vision | 300 | 4821 | 6750 | 13500 | +96% | +64% |
+| **Total (10 tasks)** | | **1900** | **12672** | **42750** | **85500** | **+96%** | **+85%** |
 
 **Vorlix-direct tasks (biggest advantage):**
 
-- *Open a specific application* — handled by **terminal** in 30ms with ~200 tokens. A CV loop would need ~4500 tokens and ~9000ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
-- *Check if a process is running* — handled by **system_query** in 15ms with ~100 tokens. A CV loop would need ~2250 tokens and ~4500ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
-- *Read a value from a config file* — handled by **file_io** in 15ms with ~100 tokens. A CV loop would need ~2250 tokens and ~4500ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
-- *Focus a specific window* — handled by **system_query** in 167ms with ~200 tokens. A CV loop would need ~4500 tokens and ~9000ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
-- *Run a terminal command and read output* — handled by **terminal** in 27ms with ~100 tokens. A CV loop would need ~2250 tokens and ~4500ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
-- *List currently open windows* — handled by **system_query** in 181ms with ~100 tokens. A CV loop would need ~2250 tokens and ~4500ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
-- *Create a scheduled reminder* — handled by **time_reminders** in 21ms with ~200 tokens. A CV loop would need ~4500 tokens and ~9000ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
+- *Open a specific application* — handled by **terminal** in 112ms with ~200 tokens. A CV loop would need ~4500 tokens and ~9000ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
+- *Check if a process is running* — handled by **system_query** in 73ms with ~100 tokens. A CV loop would need ~2250 tokens and ~4500ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
+- *Read a value from a config file* — handled by **file_io** in 9ms with ~100 tokens. A CV loop would need ~2250 tokens and ~4500ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
+- *Focus a specific window* — handled by **system_query** in 177ms with ~200 tokens. A CV loop would need ~4500 tokens and ~9000ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
+- *Run a terminal command and read output* — handled by **terminal** in 22ms with ~100 tokens. A CV loop would need ~2250 tokens and ~4500ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
+- *List currently open windows* — handled by **system_query** in 85ms with ~100 tokens. A CV loop would need ~2250 tokens and ~4500ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
+- *Create a scheduled reminder* — handled by **time_reminders** in 19ms with ~200 tokens. A CV loop would need ~4500 tokens and ~9000ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
 
 **CV-fallback task (converged — both approaches use vision):**
 
-- *CV-fallback task (legacy app, no accessibility)* — handled by **computer_vision** in 4481ms with ~300 tokens. Vorlix's CV tier uses direct template matching instead of LLM vision-analysis, providing ~65% time savings even in this converged case.
+- *CV-fallback task (legacy app, no accessibility)* — handled by **computer_vision** in 4821ms with ~300 tokens. Vorlix's CV tier uses direct template matching instead of LLM vision-analysis, providing ~65% time savings even in this converged case.
 
 **No tier available (browser bridge not implemented):**
 
@@ -47,4 +47,4 @@ Comparison of Vorlix (tiered escalation) against a simulated vision-based Comput
 
 ---
 
-_Generated by `tests/test_benchmark.py` at 2026-07-15 15:27:38 UTC_
+_Generated by `tests/test_benchmark.py` at 2026-07-15 15:31:32 UTC_
