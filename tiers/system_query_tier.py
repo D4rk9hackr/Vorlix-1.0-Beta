@@ -94,7 +94,7 @@ class SystemQueryTier(AutomationTier):
                 message="No process name provided.",
             )
 
-        for proc in psutil.process_iter(["name"]):
+        for proc in psutil.process_iter(["pid", "name"]):
             try:
                 if proc.info["name"].lower() == name:
                     return TierResponse(

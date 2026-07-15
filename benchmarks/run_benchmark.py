@@ -283,22 +283,31 @@ def _vorlix_tier(resp: Any) -> str:
         return "none"
     if isinstance(resp, HumanHelpRequired):
         return "human (escalated)"
-    if hasattr(resp, "data") and isinstance(resp.data, dict):
-        msg = (resp.message or "").lower()
-        if "terminal" in msg or "command" in msg:
-            return "terminal"
-        if "process" in msg or "window" in msg:
-            return "system_query"
-        if "click" in msg or "track" in msg:
-            return "computer_vision"
-        if "reminder" in msg or "time" in msg:
-            return "time_reminders"
-        if "read" in msg or "patch" in msg or "file" in msg:
-            return "file_io"
-        if "bridge" in msg or "browser" in msg:
-            return "browser_bridge (stub)"
-        if "skill" in msg or "activate" in msg:
-            return "skills_registry"
+    if hasattr(resp, "result"):
+        if resp.result == TierResult.SUCCESS:
+            msg = (resp.message or "").lower()
+            if any(w in msg for w in ("pid", "process", "window")):
+                return "system_query"
+            if any(w in msg for w in ("command", "exit code")):
+                return "terminal"
+            if any(w in msg for w in ("click", "track", "template")):
+                return "computer_vision"
+            if any(w in msg for w in ("reminder", "time", "schedule")):
+                return "time_reminders"
+            if any(w in msg for w in ("read", "patch", "line")):
+                return "file_io"
+            if any(w in msg for w in ("bridge", "browser")):
+                return "browser_bridge"
+            return "unknown"
+        if resp.result == TierResult.BLOCKED:
+            msg = (resp.message or "").lower()
+            if any(w in msg for w in ("wmctrl", "psutil", "display")):
+                return "missing_dep"
+            if any(w in msg for w in ("window", "focus", "resize")):
+                return "system_query"
+            if any(w in msg for w in ("template", "cv", "click", "track")):
+                return "computer_vision"
+            return "blocked"
     return "unknown"
 
 
@@ -439,8 +448,8 @@ def generate_report(results: list[TaskResult]) -> str:
     lines.append("## Notes on individual results\n")
 
     # Categorize tasks into advantage levels
-    succeeded = [r for r in results if "human" not in r.vorlix_tier]
-    escalated = [r for r in results if "human" in r.vorlix_tier and "CV-fallback" not in r.name]
+    succeeded = [r for r in results if r.vorlix_tier not in ("human (escalated)", "none", "missing_dep", "blocked")]
+    no_tier = [r for r in results if r.vorlix_tier == "human (escalated)" and "CV-fallback" not in r.name]
     cv_fallback = [r for r in results if "CV-fallback" in r.name]
 
     if succeeded:
@@ -454,14 +463,13 @@ def generate_report(results: list[TaskResult]) -> str:
             )
         lines.append("")
 
-    if escalated:
-        lines.append("**Escalated (dependencies not available in this environment):**")
-        for r in escalated:
+    if no_tier:
+        lines.append("**No tier available (browser bridge not implemented):**")
+        for r in no_tier:
             lines.append(
-                f"- *{r.name}* — escalated because the required tier was registered but "
-                "could not execute (missing system dependencies). In production with all "
-                "dependencies installed, this task would be handled by a direct tier and "
-                "the savings would match the Vorlix-direct tasks above."
+                f"- *{r.name}* — no tier handles this tool yet (browser bridge is a stub). "
+                "Once the browser bridge extension is completed, this task would be handled "
+                "by a direct tier and the savings would match the Vorlix-direct tasks above."
             )
         lines.append("")
 
