@@ -1,4 +1,4 @@
-# 🖐️ Vorlix 1.0 Beta — The AI Hand Control Layer
+# Vorlix 1.0 Beta — The AI Hand Control Layer
 
 **Give your AI a real hand to control your computer — lightly, safely, and fast.**
 
@@ -26,23 +26,35 @@ Vorlix is the control-layer engine of **The AI Hand**, a lightweight hybrid arch
                     │    required      │
                     │  • Retry logic   │
                     │  • Guardrails    │
+                    │  • Agentic       │
+                    │    (sub-agents,  │
+                    │     parallel,    │
+                    │     decompose)   │
                     └────────┬─────────┘
                              │
-        ┌────────────────────┼────────────────────┐
-        ▼                    ▼                    ▼
-┌───────────────┐  ┌────────────────┐  ┌──────────────────┐
-│  Tier 1       │  │  Tier 1.5      │  │  Tier 2          │
-│  Terminal     │  │  System Query  │  │  Web Bridge      │
-│  (shell cmds) │  │  (processes,   │  │  (browser DOM    │
-│               │  │   windows)     │  │   via extension) │
-└───────────────┘  └────────────────┘  └──────────────────┘
-                                             │
-                                        ┌────▼────┐
-                                        │  Tier 3 │
-                                        │Computer │
-                                        │ Vision  │
-                                        │(fallback)│
-                                        └─────────┘
+        ┌────────────────────┼─────────────────────────┐
+        ▼                    ▼                         ▼
+┌───────────────┐  ┌────────────────┐  ┌──────────────────────┐
+│  Tier 1       │  │  Tier 1.5      │  │  Tier 2              │
+│  Terminal     │  │  System Query  │  │  Browser Bridge      │
+│  (shell cmds) │  │  (processes,   │  │  (CDP — no Selenium) │
+│               │  │   windows)     │  │                      │
+└───────────────┘  └────────────────┘  └──────────────────────┘
+                                                    │
+                                               ┌────▼────┐
+                                               │  Tier 3 │
+                                               │Computer │
+                                               │ Vision  │
+                                               │(fallback)│
+                                               └─────────┘
+                             │
+                    ┌────────▼─────────┐
+                    │  Sub-Agents      │
+                    │  ─ spawn ─       │
+                    │  • Delegate      │
+                    │  • Parallel      │
+                    │  • Collect       │
+                    └──────────────────┘
                              │
                     ┌────────▼─────────┐
                     │  HumanHelpRequired│
@@ -57,16 +69,70 @@ Vorlix is the control-layer engine of **The AI Hand**, a lightweight hybrid arch
 | **1 — Terminal** | `terminal.run_command` | Execute shell commands with destructive-command blacklist |
 | **1.5 — System Query** | `process.list` | List running processes (requires `psutil`) |
 | | `process.is_running` | Check if a process is running |
-| | `window.list` | List open windows (requires `wmctrl` on Linux) |
+| | `window.list` | List open windows (requires `wmctrl`) |
 | | `window.focus` | Focus a window by title |
 | | `window.resize` | Resize a window |
-| **2 — Web Bridge** | `browser_controls.interact` | Click/type/hover/extract via ARIA roles (Chrome extension) |
+| **2 — Browser Bridge** | `browser_controls.navigate` | Navigate to URL via CDP (no Selenium) |
+| | `browser_controls.click_by_text` | Click element by visible text |
+| | `browser_controls.fill_field` | Fill an input field |
+| | `browser_controls.get_text` | Get page text content |
+| | `browser_controls.screenshot` | Take browser screenshot |
 | **3 — Computer Vision** | `computer_vision.click_target` | Template-matching click on screen (requires OpenCV) |
 | | `computer_vision.track_target` | Continuous tracking with Bezier cursor paths |
 | **Time & Reminders** | `time.now` | Current local time |
 | | `reminder.create` | Schedule a one-off/repeating reminder |
 | | `reminder.list` | List scheduled reminders |
 | | `reminder.cancel` | Cancel a reminder |
+| **Team / Sub-Agents** | `subagent.spawn` | Spawn a sub-agent with a goal and tool filter |
+| | `subagent.ask` | Delegate work to a running sub-agent |
+| | `subagent.list` | List all spawned sub-agents |
+| | `subagent.kill` | Terminate a sub-agent |
+| | `subagent.collect` | Wait for and collect sub-agent results |
+| | `agentic.goal` | Auto-decompose a complex goal into sub-agents |
+| **File I/O** | `file.read` | Read file content from workspace (with guardrails) |
+| | `file.patch` | Apply string replacement patch to a file |
+
+## Agentic Features
+
+- **Sub-Agent System** — any tier can spawn sub-agents that run independently
+- **Auto-Decomposition** — complex multi-step goals are split into sub-tasks and distributed across agents
+- **Parallel Execution** — multiple tool calls dispatched concurrently
+- **Recursive** — sub-agents can themselves spawn sub-agents
+- **Global Agent Pool** — agents spawned from CLI, Telegram, or tiers all share the same pool
+
+## skills.sh Integration
+
+Vorlix can search, install, and publish skills from the [skills.sh](https://skills.sh) ecosystem:
+
+```bash
+vorlix skills search <query>          # Search community skills
+vorlix skills install <owner/repo>    # Install a skill from GitHub
+vorlix skills list                    # List installed skills
+vorlix skills publish <name>          # Prepare a skill for publishing
+```
+
+## Telegram Bot
+
+Control your PC from your phone via Telegram:
+
+```bash
+export VORLIX_TELEGRAM_TOKEN="your_bot_token"
+python3 -c "from mcp.telegram_bot import VorlixTelegramBot; VorlixTelegramBot().run()"
+```
+
+Commands: `/list_skills`, `/activate`, `/deactivate`, `/override`, `/memory`, `/todo`, `/team spawn`, `/skillss search`, and free-text tool calls.
+
+## MCP Server
+
+Lightweight WebSocket server with optional TLS/HTTPS:
+
+```bash
+# Plain (ws://)
+python3 -c "from mcp.lightweight_server import serve; import asyncio; asyncio.run(serve())"
+
+# TLS (wss://) — auto-generates self-signed cert when binding to non-local address
+python3 -c "from mcp.lightweight_server import serve; import asyncio; asyncio.run(serve(host='0.0.0.0', port=8765, tls=True))"
+```
 
 ## Safety features
 
@@ -80,82 +146,95 @@ Vorlix is the control-layer engine of **The AI Hand**, a lightweight hybrid arch
 ## Quick start
 
 ```bash
-# Install dependencies
-pip install psutil           # System Query tier
-pip install opencv-python pyautogui mss numpy  # Computer Vision tier
+pip install -r requirements.txt
 
 # Run the CLI
-python vorlix_cli/main.py run terminal.run_command --arg command="echo hello" --reason "Testing"
-```
+vorlix run terminal.run_command --arg command="echo hello" --reason "Testing"
 
-### View available skills
-```bash
-python vorlix_cli/main.py skills
+# List available skills
+vorlix skills list
+
+# Spawn a sub-agent
+vorlix run subagent.spawn --arg goal="time.now" --reason "Spawn time agent"
 ```
 
 ### Manage todos
 ```bash
-python vorlix_cli/main.py todo list
-python vorlix_cli/main.py todo add "Implement feature X"
+vorlix todo list
+vorlix todo add "Implement feature X"
 ```
 
 ### Human override
 ```bash
-python vorlix_cli/main.py override status
-python vorlix_cli/main.py override stop
-python vorlix_cli/main.py override resume
+vorlix override status
+vorlix override stop
+vorlix override resume
 ```
+
+## Benchmarks
+
+Vorlix vs Claude Computer Use — **15/15 tasks**, **97× faster** (1.3s vs 127.2s), **27× fewer tokens** (2.4k vs 66k), **~99% cheaper** ($0.007 vs $0.581).
+
+Full report: `benchmarks/VORLIX_VS_CLAUDE.md`
 
 ## Tests
 
 ```bash
 python -m pytest tests/ -v
-# or
-python tests/smoke_test.py
 ```
 
 ## Project structure
 
 ```
 vorlix/
-├── core/                    # Control layer core
-│   ├── tier_base.py         # Base classes, enums, dataclasses
-│   ├── orchestrator.py      # Request dispatch & routing
-│   ├── ledger.py            # Memory & todo tracking
-│   ├── human_override.py    # Freeze/resume singleton
-│   └── art.py               # ASCII art banners
-├── tiers/                   # Tier implementations
-│   ├── terminal_tier.py     # Phase 1
-│   ├── system_query_tier.py # Phase 1.5
-│   ├── computer_vision_tier.py # Phase 3
+├── core/                       # Control layer core
+│   ├── tier_base.py            # Base classes, enums, AgenticAutomationTier
+│   ├── orchestrator.py         # Dispatch, sub-agents, parallel, agentic dispatch
+│   ├── ledger.py               # Memory & todo tracking
+│   ├── human_override.py       # Freeze/resume singleton
+│   └── art.py                  # ASCII art banners
+├── tiers/                      # Tier implementations
+│   ├── terminal_tier.py        # Shell commands
+│   ├── system_query_tier.py    # Process/window queries
+│   ├── browser_bridge_tier.py  # CDP browser control (no Selenium)
+│   ├── computer_vision_tier.py # OpenCV template matching
+│   ├── file_io_tier.py         # File read/patch
 │   ├── time_reminders_tier.py  # Time awareness
-│   └── example_stub_tier.py # Test stub
-├── extension/               # Phase 2 — Chrome extension (TypeScript)
-│   ├── manifest.json
-│   ├── tsconfig.json
-│   ├── src/background.ts
-│   ├── src/content.ts
-│   └── host/native_messaging_host.py
-├── skills/                  # Skills registry + SKILL.md files
+│   ├── team_tier.py            # Sub-agent spawning interface
+│   └── example_stub_tier.py    # Test stub
+├── extension/                  # Chrome extension (TypeScript)
+├── skills/                     # Skills registry + SKILL.md files
 │   ├── registry.py
 │   ├── terminal/SKILL.md
 │   ├── system_query/SKILL.md
 │   ├── browser_bridge/SKILL.md
 │   ├── computer_vision/SKILL.md
-│   └── time_reminders/SKILL.md
-├── mcp/                     # Lightweight MCP server
-│   └── lightweight_server.py
-├── vorlix_cli/              # Command-line interface
-│   ├── main.py
-│   └── formatting.py
-├── tests/                   # Test suite (29 tests, all passing)
-│   ├── smoke_test.py
+│   ├── time_reminders/SKILL.md
+│   └── team/SKILL.md
+├── mcp/                        # MCP server + Telegram bot
+│   ├── lightweight_server.py   # WebSocket server with TLS
+│   └── telegram_bot.py         # Telegram bot integration
+├── vorlix_cli/                 # Command-line interface
+│   ├── main.py                 # CLI entry point
+│   └── skills_sh.py            # skills.sh search/install/publish
+├── benchmarks/                 # Performance benchmarks
+│   ├── BENCHMARK_RESULTS.md
+│   ├── VORLIX_VS_CLAUDE.md
+│   ├── vorlix_vs_claude.py
+│   └── multi_step_workflows.py
+├── tests/                      # Test suite (85+ tests)
 │   ├── test_terminal_tier.py
 │   ├── test_system_query_tier.py
+│   ├── test_browser_bridge_tier.py
 │   ├── test_computer_vision_tier.py
+│   ├── test_file_io_tier.py
 │   ├── test_time_reminders.py
+│   ├── test_team_tier.py
 │   ├── test_skills_registry.py
-│   └── test_cli.py
+│   ├── test_skills_sh.py
+│   ├── test_cli.py
+│   ├── test_benchmark.py
+│   └── smoke_test.py
 ├── pyproject.toml
 └── README.md
 ```

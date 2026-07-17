@@ -9,12 +9,12 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
-from core.tier_base import AutomationTier, TierRequest, TierResponse, TierResult
+from core.tier_base import AgenticAutomationTier, TierRequest, TierResponse, TierResult
 from core.human_override import HumanOverride
 from core.ledger import Ledger
 
 
-class TimeRemindersTier(AutomationTier):
+class TimeRemindersTier(AgenticAutomationTier):
     """Lightweight time awareness and reminder scheduling tier."""
 
     def __init__(self, workspace_dir: str = "./workspace"):
@@ -161,7 +161,13 @@ class TimeRemindersTier(AutomationTier):
                 if next_trigger:
                     reminder["trigger_time"] = next_trigger.isoformat()
                     self._schedule(reminder)
-                    self._save_reminders(self._load_reminders())
+                    with self._lock:
+                        current = self._load_reminders()
+                        for i, r in enumerate(current):
+                            if r["id"] == rid:
+                                current[i] = dict(reminder)
+                                break
+                        self._save_reminders(current)
             else:
                 # Remove one-off reminder
                 with self._lock:

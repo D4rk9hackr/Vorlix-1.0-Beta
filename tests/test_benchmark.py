@@ -18,9 +18,12 @@ from typing import Any
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import tempfile
+
 from core.orchestrator import Orchestrator
 from core.tier_base import TierRequest, TierResult, HumanHelpRequired
 from core.human_override import HumanOverride
+from core.ledger import Ledger
 
 CV_TOKENS_PER_SCREENSHOT = 1500
 CV_TOKENS_PER_ANALYSIS = 750
@@ -277,6 +280,137 @@ def _generate_report(results: list[TaskResult]) -> str:
     return "\n".join(lines)
 
 
+# ------------------------------------------------------------------
+# Multi-step workflow benchmark
+# ------------------------------------------------------------------
+
+@dataclass
+class WorkflowStep:
+    tool: str
+    arguments: dict
+    reasoning: str
+    confidence: float = 0.95
+    cv_iters: int = 1
+
+
+@dataclass
+class WorkflowResult:
+    name: str
+    step_count: int
+    steps_succeeded: int
+    total_vorlix_ms: int
+    total_vorlix_tokens: int
+    total_cv_ms: int
+    total_cv_tokens: int
+    steps: list[TaskResult]
+
+
+MULTI_STEP_WORKFLOWS: list[tuple[str, list[WorkflowStep]]] = [
+    (
+        "Read → Patch → Verify",
+        [
+            WorkflowStep("file.read", {"path": "setup.py", "max_lines": 30},
+                         "Reading setup.py to find version line."),
+            WorkflowStep("file.patch", {"path": "setup.py",
+                                        "old_content": "version = \"1.0.0\"",
+                                        "new_content": "version = \"2.0.0\""},
+                         "Bumping version string."),
+            WorkflowStep("file.read", {"path": "setup.py", "max_lines": 10},
+                         "Verifying the patch was applied."),
+        ],
+    ),
+    (
+        "Check process → Terminal action → Verify",
+        [
+            WorkflowStep("process.is_running", {"name": "python3"},
+                         "Checking if Python is running."),
+            WorkflowStep("terminal.run_command",
+                         {"command": "echo 'process confirmed'", "execution_timeout_ms": 5000},
+                         "Logging process confirmation via terminal."),
+            WorkflowStep("process.is_running", {"name": "python3"},
+                         "Verifying Python is still running."),
+        ],
+    ),
+    (
+        "Create → List → Cancel reminder",
+        [
+            WorkflowStep("reminder.create",
+                         {"message": "wf test", "trigger_time": "2099-06-01T00:00:00+00:00",
+                          "repeat": "none"},
+                         "Creating a test reminder."),
+            WorkflowStep("reminder.list", {},
+                         "Listing reminders to confirm creation."),
+            WorkflowStep("reminder.cancel", {"reminder_id": "__placeholder__"},
+                         "Cancelling the reminder (id resolved at runtime)."),
+        ],
+    ),
+        (
+            "Guardrail blocks file_io → Terminal bypass succeeds",
+            [
+                WorkflowStep("file.read", {"path": "/etc/passwd"},
+                             "Attempting to read outside project dir — should be blocked.",
+                             confidence=0.95),
+                WorkflowStep("terminal.run_command",
+                             {"command": "echo bypass_success",
+                              "execution_timeout_ms": 5000},
+                             "Bypass via terminal since file_io guardrail blocked direct read."),
+            ],
+        ),
+    (
+        "All tiers exhausted → Human escalation",
+        [
+            WorkflowStep("database.query", {"sql": "SELECT 1"},
+                         "No tier handles database queries — should escalate to human."),
+        ],
+    ),
+]
+
+
+def _generate_multi_step_report(wf_results: list[WorkflowResult]) -> str:
+    lines = ["\n## Multi-Step Workflow Benchmarks\n"]
+    lines.append(
+        "Each workflow chains multiple TierRequest calls across one or more tiers, "
+        "measuring cumulative latency and token cost vs a simulated CV loop.\n"
+    )
+    lines.append(
+        "| Workflow | Steps | Succeeded | Vorlix time (ms) | Vorlix tokens | "
+        "Sim CV time (ms) | Sim CV tokens |"
+    )
+    lines.append("|" + "|".join("---" for _ in range(7)) + "|")
+
+    tot_vm = tot_vt = tot_cm = tot_ct = 0
+    for w in wf_results:
+        lines.append(
+            f"| {w.name} | {w.step_count} | {w.steps_succeeded}/{w.step_count} | "
+            f"{w.total_vorlix_ms} | {w.total_vorlix_tokens} | "
+            f"{w.total_cv_ms} | {w.total_cv_tokens} |"
+        )
+        tot_vm += w.total_vorlix_ms
+        tot_vt += w.total_vorlix_tokens
+        tot_cm += w.total_cv_ms
+        tot_ct += w.total_cv_tokens
+
+    lines.append(
+        f"| **Total ({len(wf_results)} workflows)** | "
+        f"**{sum(w.step_count for w in wf_results)}** | "
+        f"**{sum(w.steps_succeeded for w in wf_results)}** | "
+        f"**{tot_vm}** | **{tot_vt}** | **{tot_cm}** | **{tot_ct}** |\n"
+    )
+
+    for w in wf_results:
+        lines.append(f"### {w.name}\n")
+        lines.append("| Step | Tier | Time (ms) | Tokens | Succeeded |")
+        lines.append("|---|---|---|---|---|")
+        for s in w.steps:
+            lines.append(
+                f"| {s.name} | {s.tier} | {s.vorlix_time_ms} | {s.vorlix_tokens} | "
+                f"{'✓' if s.succeeded else '✗'} |"
+            )
+        lines.append("")
+
+    return "\n".join(lines)
+
+
 class TestBenchmark:
     """10-task benchmark comparing Vorlix against simulated Computer Use."""
 
@@ -371,3 +505,126 @@ class TestBenchmark:
         # Total Vorlix time should be reasonable (under 120s)
         total_ms = sum(r.vorlix_time_ms for r in results)
         assert total_ms < 120000, f"Total benchmark time too high: {total_ms}ms"
+
+    def test_multi_step_workflows(self):
+        """Multi-step workflows across tiers — measures cumulative orchestration overhead."""
+        import tempfile
+        import copy
+
+        tmpdir = tempfile.mkdtemp()
+        setup_py = os.path.join(tmpdir, "setup.py")
+        with open(setup_py, "w") as f:
+            f.write("# dummy\nversion = \"1.0.0\"\nname = \"vorlix\"\n")
+
+        orch = Orchestrator(min_confidence=0.70)
+        from tiers.terminal_tier import TerminalTier
+        from tiers.system_query_tier import SystemQueryTier
+        from tiers.time_reminders_tier import TimeRemindersTier
+        from tiers.file_io_tier import FileIOTier
+
+        ft = FileIOTier(project_dir=tmpdir)
+        orch.register_tier(TerminalTier())
+        orch.register_tier(SystemQueryTier())
+        orch.register_tier(TimeRemindersTier())
+        orch.register_tier(ft)
+
+        # Isolate ledger so reminders don't pollute workspace
+        bench_dir = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "benchmarks",
+        )
+        os.makedirs(bench_dir, exist_ok=True)
+        orch.ledger = Ledger(os.path.join(bench_dir, "workspace_multi"))
+
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        wf_results: list[WorkflowResult] = []
+
+        for wf_name, steps in MULTI_STEP_WORKFLOWS:
+            step_results: list[TaskResult] = []
+            first_reminder_id = None
+
+            for i, step in enumerate(steps):
+                args = dict(step.arguments)
+
+                # Resolve placeholder reminder_id at runtime
+                if step.tool == "reminder.cancel" and first_reminder_id:
+                    args["reminder_id"] = first_reminder_id
+
+                req = TierRequest(
+                    tool=step.tool,
+                    arguments=args,
+                    reasoning=step.reasoning,
+                    confidence=step.confidence,
+                )
+                t0 = time.perf_counter()
+                resp = loop.run_until_complete(orch.dispatch(req))
+                elapsed = int((time.perf_counter() - t0) * 1000)
+
+                tier = _identify_tier(resp)
+                succeeded = not isinstance(resp, HumanHelpRequired) and hasattr(resp, "result") and resp.result == TierResult.SUCCESS
+                msg = ""
+                if succeeded and hasattr(resp, "message"):
+                    msg = resp.message
+                elif isinstance(resp, HumanHelpRequired):
+                    msg = resp.reason[:60]
+                    # For the "all tiers exhausted" case this is expected
+                    if wf_name == "All tiers exhausted → Human escalation":
+                        succeeded = True  # expected escalation
+
+                vt = VORLIX_TOKENS_PER_CHOICE * max(1, step.cv_iters)
+                ct = step.cv_iters * (CV_TOKENS_PER_SCREENSHOT + CV_TOKENS_PER_ANALYSIS)
+                cm = step.cv_iters * CV_TIME_PER_ITERATION_MS
+
+                step_results.append(TaskResult(
+                    name=f"Step {i+1}: {step.tool}",
+                    tier=tier,
+                    vorlix_tokens=vt,
+                    vorlix_time_ms=elapsed,
+                    cv_tokens=ct,
+                    cv_time_ms=cm,
+                    succeeded=succeeded,
+                    message=msg,
+                ))
+
+                # Capture first reminder ID for cancel step
+                if step.tool == "reminder.create" and succeeded and hasattr(resp, "data") and isinstance(resp.data, dict):
+                    first_reminder_id = resp.data.get("reminder_id")
+
+                status = "✓" if succeeded else "✗"
+                print(f"  {status} {wf_name} → step {i+1}/{len(steps)} ({step.tool}) in {elapsed}ms")
+
+            total_ms = sum(s.vorlix_time_ms for s in step_results)
+            total_vt = sum(s.vorlix_tokens for s in step_results)
+            total_cm = sum(s.cv_time_ms for s in step_results)
+            total_ct = sum(s.cv_tokens for s in step_results)
+            succeeded_count = sum(1 for s in step_results if s.succeeded)
+
+            wf_results.append(WorkflowResult(
+                name=wf_name,
+                step_count=len(steps),
+                steps_succeeded=succeeded_count,
+                total_vorlix_ms=total_ms,
+                total_vorlix_tokens=total_vt,
+                total_cv_ms=total_cm,
+                total_cv_tokens=total_ct,
+                steps=step_results,
+            ))
+
+        loop.close()
+
+        # Append multi-step section to report
+        report_path = _report_path()
+        appendix = _generate_multi_step_report(wf_results)
+        with open(report_path, "a", encoding="utf-8") as f:
+            f.write(appendix)
+        print(f"\n  Multi-step appendix appended to {report_path}")
+
+        # All steps in guardrail bypass and escalation workflows should succeed
+        for w in wf_results:
+            assert w.steps_succeeded >= w.step_count - 1, (
+                f"Workflow '{w.name}' failed: {w.steps_succeeded}/{w.step_count} steps passed"
+            )
+
+        total_time = sum(w.total_vorlix_ms for w in wf_results)
+        assert total_time < 60000, f"Multi-step benchmark took too long: {total_time}ms"

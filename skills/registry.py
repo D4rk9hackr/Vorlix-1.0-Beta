@@ -66,10 +66,11 @@ def activate_skill(name: str) -> Tuple[bool, str, Optional[AutomationTier]]:
         tier_map = {
             "terminal": "terminal_tier",
             "system_query": "system_query_tier",
-            "browser_bridge": None,
+            "browser_bridge": "browser_bridge_tier",
             "computer_vision": "computer_vision_tier",
             "time_reminders": "time_reminders_tier",
             "auto_debug": "file_io_tier",
+            "team": "team_tier",
         }
         module_name = tier_map.get(name)
         if not module_name:
@@ -82,9 +83,11 @@ def activate_skill(name: str) -> Tuple[bool, str, Optional[AutomationTier]]:
             except ImportError as e:
                 return False, f"Failed to import {module_path}: {e}", None
 
+        from core.tier_base import AgenticAutomationTier
         module = sys.modules[module_path]
         for _, obj in inspect.getmembers(module, inspect.isclass):
-            if issubclass(obj, AutomationTier) and obj is not AutomationTier:
+            if (issubclass(obj, AutomationTier) and obj is not AutomationTier
+                    and obj is not AgenticAutomationTier):
                 tier = obj()
                 tier_name = tier.name
                 return True, f"Skill '{name}' activated as {tier_name}.", tier
@@ -92,6 +95,7 @@ def activate_skill(name: str) -> Tuple[bool, str, Optional[AutomationTier]]:
         return False, f"No AutomationTier subclass found in {module_path}.", None
 
     # Load from tool.py in skill directory
+    from core.tier_base import AgenticAutomationTier
     spec = importlib.util.spec_from_file_location(f"skills.{name}.tool", tool_path)
     if spec is None or spec.loader is None:
         return False, f"Failed to load tool.py for skill '{name}'.", None
@@ -101,7 +105,8 @@ def activate_skill(name: str) -> Tuple[bool, str, Optional[AutomationTier]]:
     spec.loader.exec_module(module)
 
     for _, obj in inspect.getmembers(module, inspect.isclass):
-        if issubclass(obj, AutomationTier) and obj is not AutomationTier:
+        if (issubclass(obj, AutomationTier) and obj is not AutomationTier
+                and obj is not AgenticAutomationTier):
             tier = obj()
             return True, f"Skill '{name}' activated as {tier.name}.", tier
 

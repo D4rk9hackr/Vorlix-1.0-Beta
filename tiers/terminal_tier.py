@@ -7,7 +7,7 @@ import subprocess
 import sys
 from typing import List, Tuple
 
-from core.tier_base import AutomationTier, TierRequest, TierResponse, TierResult
+from core.tier_base import AgenticAutomationTier, TierRequest, TierResponse, TierResult
 
 DESTRUCTIVE_PATTERNS: List[str] = [
     "rm -rf /",
@@ -40,7 +40,7 @@ DESTRUCTIVE_PATTERNS: List[str] = [
 ]
 
 
-class TerminalTier(AutomationTier):
+class TerminalTier(AgenticAutomationTier):
     """Executes terminal/shell commands with destructive-command blacklist."""
 
     def __init__(self):

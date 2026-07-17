@@ -5,11 +5,11 @@ import math
 import time
 from typing import Optional
 
-from core.tier_base import AutomationTier, TierRequest, TierResponse, TierResult
+from core.tier_base import AgenticAutomationTier, TierRequest, TierResponse, TierResult
 from core.human_override import HumanOverride
 
 
-class ComputerVisionTier(AutomationTier):
+class ComputerVisionTier(AgenticAutomationTier):
     """Last-resort tier: screen capture, template matching, cursor movement."""
 
     def __init__(self):

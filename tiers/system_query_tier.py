@@ -5,11 +5,11 @@ import platform
 import subprocess
 from typing import Dict, List, Optional
 
-from core.tier_base import AutomationTier, TierRequest, TierResponse, TierResult
+from core.tier_base import AgenticAutomationTier, TierRequest, TierResponse, TierResult
 from core.human_override import HumanOverride
 
 
-class SystemQueryTier(AutomationTier):
+class SystemQueryTier(AgenticAutomationTier):
     """Read-only system introspection — processes and windows."""
 
     def __init__(self):

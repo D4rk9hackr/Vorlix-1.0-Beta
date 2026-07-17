@@ -1,0 +1,42 @@
+# todo.md
+
+- [2026-07-17T19:57:48.357473] BLOCKED from TerminalTier for terminal.run_command: Command timed out after 500ms.
+- [2026-07-17T19:57:48.362652] BLOCKED from SystemQueryTier for terminal.run_command: Unknown tool: terminal.run_command
+- [2026-07-17T19:57:48.367827] BLOCKED from TimeRemindersTier for terminal.run_command: Unknown tool: terminal.run_command
+- [2026-07-17T19:57:48.374067] BLOCKED from FileIOTier for terminal.run_command: Unknown tool: terminal.run_command
+- [2026-07-17T19:57:48.380188] All tiers exhausted for terminal.run_command
+- [2026-07-17T19:57:48.385222] Guardrail block on terminal.run_command in TerminalTier
+- [2026-07-17T19:57:48.392327] BLOCKED from TerminalTier for process.is_running: Unknown tool: process.is_running
+- [2026-07-17T19:57:48.447352] BLOCKED from TerminalTier for process.list: Unknown tool: process.list
+- [2026-07-17T19:57:48.480758] BLOCKED from TerminalTier for window.list: Unknown tool: window.list
+- [2026-07-17T19:57:48.608512] BLOCKED from SystemQueryTier for window.list: wmctrl not available. Install with: pkg install wmctrl
+- [2026-07-17T19:57:48.626501] BLOCKED from TimeRemindersTier for window.list: Unknown tool: window.list
+- [2026-07-17T19:57:48.635237] BLOCKED from FileIOTier for window.list: Unknown tool: window.list
+- [2026-07-17T19:57:48.641694] All tiers exhausted for window.list
+- [2026-07-17T19:57:48.656173] BLOCKED from TerminalTier for window.focus: Unknown tool: window.focus
+- [2026-07-17T19:57:48.799889] BLOCKED from SystemQueryTier for window.focus: No window found with title containing 'Terminal'.
+- [2026-07-17T19:57:48.805633] BLOCKED from TimeRemindersTier for window.focus: Unknown tool: window.focus
+- [2026-07-17T19:57:48.809331] BLOCKED from FileIOTier for window.focus: Unknown tool: window.focus
+- [2026-07-17T19:57:48.820481] All tiers exhausted for window.focus
+- [2026-07-17T19:57:48.827314] BLOCKED from TerminalTier for file.read: Unknown tool: file.read
+- [2026-07-17T19:57:48.832583] BLOCKED from SystemQueryTier for file.read: Unknown tool: file.read
+- [2026-07-17T19:57:48.840741] BLOCKED from TimeRemindersTier for file.read: Unknown tool: file.read
+- [2026-07-17T19:57:48.845872] BLOCKED from FileIOTier for file.read: File not found: pyproject.toml
+- [2026-07-17T19:57:48.850285] All tiers exhausted for file.read
+- [2026-07-17T19:57:48.858803] BLOCKED from TerminalTier for file.read: Unknown tool: file.read
+- [2026-07-17T19:57:48.864190] BLOCKED from SystemQueryTier for file.read: Unknown tool: file.read
+- [2026-07-17T19:57:48.867593] BLOCKED from TimeRemindersTier for file.read: Unknown tool: file.read
+- [2026-07-17T19:57:48.874464] Guardrail block on file.read in FileIOTier
+- [2026-07-17T19:57:48.881728] BLOCKED from TerminalTier for file.patch: Unknown tool: file.patch
+- [2026-07-17T19:57:48.885152] BLOCKED from SystemQueryTier for file.patch: Unknown tool: file.patch
+- [2026-07-17T19:57:48.890402] BLOCKED from TimeRemindersTier for file.patch: Unknown tool: file.patch
+- [2026-07-17T19:57:48.906052] BLOCKED from TerminalTier for reminder.create: Unknown tool: reminder.create
+- [2026-07-17T19:57:48.911139] BLOCKED from SystemQueryTier for reminder.create: Unknown tool: reminder.create
+- [2026-07-17T19:57:48.936485] BLOCKED from TerminalTier for reminder.list: Unknown tool: reminder.list
+- [2026-07-17T19:57:48.941349] BLOCKED from SystemQueryTier for reminder.list: Unknown tool: reminder.list
+- [2026-07-17T19:57:48.948881] BLOCKED from TerminalTier for database.query: Unknown tool: database.query
+- [2026-07-17T19:57:48.952951] BLOCKED from SystemQueryTier for database.query: Unknown tool: database.query
+- [2026-07-17T19:57:48.958211] BLOCKED from TimeRemindersTier for database.query: Unknown tool: database.query
+- [2026-07-17T19:57:48.963132] BLOCKED from FileIOTier for database.query: Unknown tool: database.query
+- [2026-07-17T19:57:48.967359] All tiers exhausted for database.query
+- [2026-07-17T19:57:48.974338] Low confidence on terminal.run_command: human confirmation needed.

@@ -1,8 +1,8 @@
 """Example stub tier for testing the orchestrator."""
-from core.tier_base import AutomationTier, TierRequest, TierResponse, TierResult
+from core.tier_base import AgenticAutomationTier, TierRequest, TierResponse, TierResult
 
 
-class ExampleStubTier(AutomationTier):
+class ExampleStubTier(AgenticAutomationTier):
     """A stub tier that succeeds on 'stub.echo' and blocks everything else."""
 
     def __init__(self):

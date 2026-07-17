@@ -2,7 +2,7 @@
 import difflib
 import os
 
-from core.tier_base import AutomationTier, TierRequest, TierResponse, TierResult
+from core.tier_base import AgenticAutomationTier, TierRequest, TierResponse, TierResult
 from core.human_override import HumanOverride
 from core.ledger import Ledger
 
@@ -24,7 +24,7 @@ BLOCKED_PATH_PARTS = [
 ]
 
 
-class FileIOTier(AutomationTier):
+class FileIOTier(AgenticAutomationTier):
     """Read-only file inspection and targeted source-code patching."""
 
     def __init__(self, project_dir: str | None = None):

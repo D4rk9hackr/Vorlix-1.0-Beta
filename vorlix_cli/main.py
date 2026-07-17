@@ -107,17 +107,43 @@ async def cmd_override(args: argparse.Namespace):
             print("  Resume cancelled.")
 
 
-async def cmd_skills(args: argparse.Namespace):
-    skills = list_skills()
+async def cmd_skills_list(args: argparse.Namespace):
+    from vorlix_cli.skills_sh import list_with_sources
+    skills = list_with_sources()
     if not skills:
         print("  No skills found.")
     for s in skills:
         tools_str = ", ".join(s.get("tools", []))
-        print(f"  📦 {s['name']}")
+        source = s.get("_source", "?")
+        print(f"  📦 {s['name']}  [{source}]")
         print(f"     {s.get('description', '')}")
         if tools_str:
             print(f"     Tools: {tools_str}")
         print()
+
+
+async def cmd_skills_search(args: argparse.Namespace):
+    from vorlix_cli.skills_sh import search_skills_sh
+    results = search_skills_sh(args.query, limit=args.limit)
+    if not results:
+        print("  No results.")
+    for r in results:
+        print(f"  📦 {r['name']}")
+        print(f"     {r.get('description', '')}")
+        print(f"     Source: {r.get('source', '?')}")
+        print()
+
+
+async def cmd_skills_install(args: argparse.Namespace):
+    from vorlix_cli.skills_sh import install_skill
+    success, msg = install_skill(args.source)
+    print(f"  {'✅' if success else '⚠'} {msg}")
+
+
+async def cmd_skills_publish(args: argparse.Namespace):
+    from vorlix_cli.skills_sh import publish_skill
+    success, msg = publish_skill(args.name)
+    print(f"  {'✅' if success else '⚠'} {msg}")
 
 
 def main():
@@ -160,7 +186,17 @@ Examples:
     ovr_p.add_argument("action", choices=["status", "stop", "resume"])
 
     # skills
-    sub.add_parser("skills", help="List available skills")
+    skills_p = sub.add_parser("skills", help="Manage skills")
+    skills_sub = skills_p.add_subparsers(dest="skills_action")
+
+    skills_list_p = skills_sub.add_parser("list", help="List installed skills")
+    skills_search_p = skills_sub.add_parser("search", help="Search skills.sh registry")
+    skills_search_p.add_argument("query", help="Search query")
+    skills_search_p.add_argument("--limit", type=int, default=10, help="Max results")
+    skills_install_p = skills_sub.add_parser("install", help="Install a skill from GitHub")
+    skills_install_p.add_argument("source", help="GitHub repo (owner/repo or owner/repo/path)")
+    skills_publish_p = skills_sub.add_parser("publish", help="Prepare a skill for skills.sh")
+    skills_publish_p.add_argument("name", help="Skill name")
 
     args = parser.parse_args()
 
@@ -175,7 +211,14 @@ Examples:
     elif args.command == "override":
         asyncio.run(cmd_override(args))
     elif args.command == "skills":
-        asyncio.run(cmd_skills(args))
+        if args.skills_action == "list" or args.skills_action is None:
+            asyncio.run(cmd_skills_list(args))
+        elif args.skills_action == "search":
+            asyncio.run(cmd_skills_search(args))
+        elif args.skills_action == "install":
+            asyncio.run(cmd_skills_install(args))
+        elif args.skills_action == "publish":
+            asyncio.run(cmd_skills_publish(args))
     else:
         parser.print_help()
 

@@ -6,36 +6,33 @@ Comparison of Vorlix (tiered escalation) against a simulated vision-based Comput
 
 | Task | Vorlix tier | Vorlix tokens | Vorlix time (ms) | Sim CV tokens | Sim CV time (ms) | Token savings | Time savings |
 |---|---|---|---|---|---|---|---|
-| Open a specific application | terminal | 200 | 112 | 4500 | 9000 | +96% | +99% |
-| Check if a process is running | system_query | 100 | 73 | 2250 | 4500 | +96% | +98% |
-| Click a button in a browser (via ARIA) | human (escalated) | 300 | 7336 | 6750 | 13500 | +96% | +46% |
-| Read a value from a config file | file_io | 100 | 9 | 2250 | 4500 | +96% | +100% |
-| Focus a specific window | system_query | 200 | 177 | 4500 | 9000 | +96% | +98% |
-| Run a terminal command and read output | terminal | 100 | 22 | 2250 | 4500 | +96% | +100% |
-| Fill a text field in a browser form | human (escalated) | 300 | 18 | 6750 | 13500 | +96% | +100% |
-| List currently open windows | system_query | 100 | 85 | 2250 | 4500 | +96% | +98% |
-| Create a scheduled reminder | time_reminders | 200 | 19 | 4500 | 9000 | +96% | +100% |
-| CV-fallback task (legacy app, no accessibility) | computer_vision | 300 | 4821 | 6750 | 13500 | +96% | +64% |
-| **Total (10 tasks)** | | **1900** | **12672** | **42750** | **85500** | **+96%** | **+85%** |
+| Open a specific application | terminal | 200 | 23 | 4500 | 9000 | +96% | +100% |
+| Check if a process is running | system_query | 100 | 19 | 2250 | 4500 | +96% | +100% |
+| Click a button in a browser (via ARIA) | human (escalated) | 300 | 4514 | 6750 | 13500 | +96% | +67% |
+| Read a value from a config file | file_io | 100 | 13 | 2250 | 4500 | +96% | +100% |
+| Focus a specific window | human (escalated) | 200 | 138 | 4500 | 9000 | +96% | +98% |
+| Run a terminal command and read output | terminal | 100 | 29 | 2250 | 4500 | +96% | +99% |
+| Fill a text field in a browser form | human (escalated) | 300 | 88 | 6750 | 13500 | +96% | +99% |
+| List currently open windows | human (escalated) | 100 | 151 | 2250 | 4500 | +96% | +97% |
+| Create a scheduled reminder | time_reminders | 200 | 22 | 4500 | 9000 | +96% | +100% |
+| CV-fallback task (legacy app, no accessibility) | human (escalated) | 300 | 105 | 6750 | 13500 | +96% | +99% |
+| **Total (10 tasks)** | | **1900** | **5102** | **42750** | **85500** | **+96%** | **+94%** |
 
 **Vorlix-direct tasks (biggest advantage):**
 
-- *Open a specific application* — handled by **terminal** in 112ms with ~200 tokens. A CV loop would need ~4500 tokens and ~9000ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
-- *Check if a process is running* — handled by **system_query** in 73ms with ~100 tokens. A CV loop would need ~2250 tokens and ~4500ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
-- *Read a value from a config file* — handled by **file_io** in 9ms with ~100 tokens. A CV loop would need ~2250 tokens and ~4500ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
-- *Focus a specific window* — handled by **system_query** in 177ms with ~200 tokens. A CV loop would need ~4500 tokens and ~9000ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
-- *Run a terminal command and read output* — handled by **terminal** in 22ms with ~100 tokens. A CV loop would need ~2250 tokens and ~4500ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
-- *List currently open windows* — handled by **system_query** in 85ms with ~100 tokens. A CV loop would need ~2250 tokens and ~4500ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
-- *Create a scheduled reminder* — handled by **time_reminders** in 19ms with ~200 tokens. A CV loop would need ~4500 tokens and ~9000ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
-
-**CV-fallback task (converged — both approaches use vision):**
-
-- *CV-fallback task (legacy app, no accessibility)* — handled by **computer_vision** in 4821ms with ~300 tokens. Vorlix's CV tier uses direct template matching instead of LLM vision-analysis, providing ~65% time savings even in this converged case.
+- *Open a specific application* — handled by **terminal** in 23ms with ~200 tokens. A CV loop would need ~4500 tokens and ~9000ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
+- *Check if a process is running* — handled by **system_query** in 19ms with ~100 tokens. A CV loop would need ~2250 tokens and ~4500ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
+- *Read a value from a config file* — handled by **file_io** in 13ms with ~100 tokens. A CV loop would need ~2250 tokens and ~4500ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
+- *Run a terminal command and read output* — handled by **terminal** in 29ms with ~100 tokens. A CV loop would need ~2250 tokens and ~4500ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
+- *Create a scheduled reminder* — handled by **time_reminders** in 22ms with ~200 tokens. A CV loop would need ~4500 tokens and ~9000ms — Vorlix is faster by avoiding screenshot capture and vision-model inference entirely.
 
 **No tier available (browser bridge not implemented):**
 
 - *Click a button in a browser (via ARIA)* — no tier handles this tool yet (browser bridge is a stub). Once completed, this would be handled by a direct tier and match the savings above.
+- *Focus a specific window* — no tier handles this tool yet (browser bridge is a stub). Once completed, this would be handled by a direct tier and match the savings above.
 - *Fill a text field in a browser form* — no tier handles this tool yet (browser bridge is a stub). Once completed, this would be handled by a direct tier and match the savings above.
+- *List currently open windows* — no tier handles this tool yet (browser bridge is a stub). Once completed, this would be handled by a direct tier and match the savings above.
+- *CV-fallback task (legacy app, no accessibility)* — no tier handles this tool yet (browser bridge is a stub). Once completed, this would be handled by a direct tier and match the savings above.
 
 ## Caveats
 
@@ -47,4 +44,54 @@ Comparison of Vorlix (tiered escalation) against a simulated vision-based Comput
 
 ---
 
-_Generated by `tests/test_benchmark.py` at 2026-07-15 15:31:32 UTC_
+_Generated by `tests/test_benchmark.py` at 2026-07-17 20:22:50 UTC_
+
+## Multi-Step Workflow Benchmarks
+
+Each workflow chains multiple TierRequest calls across one or more tiers, measuring cumulative latency and token cost vs a simulated CV loop.
+
+| Workflow | Steps | Succeeded | Vorlix time (ms) | Vorlix tokens | Sim CV time (ms) | Sim CV tokens |
+|---|---|---|---|---|---|---|
+| Read → Patch → Verify | 3 | 3/3 | 35 | 300 | 13500 | 6750 |
+| Check process → Terminal action → Verify | 3 | 3/3 | 54 | 300 | 13500 | 6750 |
+| Create → List → Cancel reminder | 3 | 3/3 | 44 | 300 | 13500 | 6750 |
+| Guardrail blocks file_io → Terminal bypass succeeds | 2 | 1/2 | 33 | 200 | 9000 | 4500 |
+| All tiers exhausted → Human escalation | 1 | 1/1 | 12 | 100 | 4500 | 2250 |
+| **Total (5 workflows)** | **12** | **11** | **178** | **1200** | **54000** | **27000** |
+
+### Read → Patch → Verify
+
+| Step | Tier | Time (ms) | Tokens | Succeeded |
+|---|---|---|---|---|
+| Step 1: file.read | file_io | 8 | 100 | ✓ |
+| Step 2: file.patch | file_io | 18 | 100 | ✓ |
+| Step 3: file.read | file_io | 9 | 100 | ✓ |
+
+### Check process → Terminal action → Verify
+
+| Step | Tier | Time (ms) | Tokens | Succeeded |
+|---|---|---|---|---|
+| Step 1: process.is_running | system_query | 19 | 100 | ✓ |
+| Step 2: terminal.run_command | terminal | 21 | 100 | ✓ |
+| Step 3: process.is_running | system_query | 14 | 100 | ✓ |
+
+### Create → List → Cancel reminder
+
+| Step | Tier | Time (ms) | Tokens | Succeeded |
+|---|---|---|---|---|
+| Step 1: reminder.create | time_reminders | 28 | 100 | ✓ |
+| Step 2: reminder.list | time_reminders | 6 | 100 | ✓ |
+| Step 3: reminder.cancel | time_reminders | 10 | 100 | ✓ |
+
+### Guardrail blocks file_io → Terminal bypass succeeds
+
+| Step | Tier | Time (ms) | Tokens | Succeeded |
+|---|---|---|---|---|
+| Step 1: file.read | human (escalated) | 11 | 100 | ✗ |
+| Step 2: terminal.run_command | terminal | 22 | 100 | ✓ |
+
+### All tiers exhausted → Human escalation
+
+| Step | Tier | Time (ms) | Tokens | Succeeded |
+|---|---|---|---|---|
+| Step 1: database.query | human (escalated) | 12 | 100 | ✓ |
