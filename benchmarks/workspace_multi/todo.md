@@ -240,3 +240,29 @@ Try 'cat --help' for more information.
 - [2026-07-17T20:22:50.587674] BLOCKED from TimeRemindersTier for database.query: Unknown tool: database.query
 - [2026-07-17T20:22:50.589565] BLOCKED from FileIOTier for database.query: Unknown tool: database.query
 - [2026-07-17T20:22:50.591474] All tiers exhausted for database.query
+- [2026-07-17T20:24:25.529426] BLOCKED from TerminalTier for file.read: Unknown tool: file.read
+- [2026-07-17T20:24:25.532824] BLOCKED from SystemQueryTier for file.read: Unknown tool: file.read
+- [2026-07-17T20:24:25.536607] BLOCKED from TimeRemindersTier for file.read: Unknown tool: file.read
+- [2026-07-17T20:24:25.544366] BLOCKED from TerminalTier for file.patch: Unknown tool: file.patch
+- [2026-07-17T20:24:25.547106] BLOCKED from SystemQueryTier for file.patch: Unknown tool: file.patch
+- [2026-07-17T20:24:25.550417] BLOCKED from TimeRemindersTier for file.patch: Unknown tool: file.patch
+- [2026-07-17T20:24:25.561553] BLOCKED from TerminalTier for file.read: Unknown tool: file.read
+- [2026-07-17T20:24:25.566109] BLOCKED from SystemQueryTier for file.read: Unknown tool: file.read
+- [2026-07-17T20:24:25.568978] BLOCKED from TimeRemindersTier for file.read: Unknown tool: file.read
+- [2026-07-17T20:24:25.576426] BLOCKED from TerminalTier for process.is_running: Unknown tool: process.is_running
+- [2026-07-17T20:24:25.625156] BLOCKED from TerminalTier for process.is_running: Unknown tool: process.is_running
+- [2026-07-17T20:24:25.647970] BLOCKED from TerminalTier for reminder.create: Unknown tool: reminder.create
+- [2026-07-17T20:24:25.652921] BLOCKED from SystemQueryTier for reminder.create: Unknown tool: reminder.create
+- [2026-07-17T20:24:25.667809] BLOCKED from TerminalTier for reminder.list: Unknown tool: reminder.list
+- [2026-07-17T20:24:25.670956] BLOCKED from SystemQueryTier for reminder.list: Unknown tool: reminder.list
+- [2026-07-17T20:24:25.678533] BLOCKED from TerminalTier for reminder.cancel: Unknown tool: reminder.cancel
+- [2026-07-17T20:24:25.682856] BLOCKED from SystemQueryTier for reminder.cancel: Unknown tool: reminder.cancel
+- [2026-07-17T20:24:25.695686] BLOCKED from TerminalTier for file.read: Unknown tool: file.read
+- [2026-07-17T20:24:25.701405] BLOCKED from SystemQueryTier for file.read: Unknown tool: file.read
+- [2026-07-17T20:24:25.706029] BLOCKED from TimeRemindersTier for file.read: Unknown tool: file.read
+- [2026-07-17T20:24:25.709475] Guardrail block on file.read in FileIOTier
+- [2026-07-17T20:24:25.736409] BLOCKED from TerminalTier for database.query: Unknown tool: database.query
+- [2026-07-17T20:24:25.738920] BLOCKED from SystemQueryTier for database.query: Unknown tool: database.query
+- [2026-07-17T20:24:25.742079] BLOCKED from TimeRemindersTier for database.query: Unknown tool: database.query
+- [2026-07-17T20:24:25.746158] BLOCKED from FileIOTier for database.query: Unknown tool: database.query
+- [2026-07-17T20:24:25.748960] All tiers exhausted for database.query

@@ -2152,3 +2152,237 @@ Try 'cat --help' for more information.
 **Recovery Route:** Escalating to human — no tier available or capable.
 
 ---
+
+## [2026-07-17T20:24:25.527744]
+**Thought:** TerminalTier returned BLOCKED for file.read
+
+**Blockers:** Unknown tool: file.read
+
+**Recovery Route:** Try next tier or escalate to human.
+
+---
+
+## [2026-07-17T20:24:25.530712]
+**Thought:** SystemQueryTier returned BLOCKED for file.read
+
+**Blockers:** Unknown tool: file.read
+
+**Recovery Route:** Try next tier or escalate to human.
+
+---
+
+## [2026-07-17T20:24:25.534899]
+**Thought:** TimeRemindersTier returned BLOCKED for file.read
+
+**Blockers:** Unknown tool: file.read
+
+**Recovery Route:** Try next tier or escalate to human.
+
+---
+
+## [2026-07-17T20:24:25.542044]
+**Thought:** TerminalTier returned BLOCKED for file.patch
+
+**Blockers:** Unknown tool: file.patch
+
+**Recovery Route:** Try next tier or escalate to human.
+
+---
+
+## [2026-07-17T20:24:25.545767]
+**Thought:** SystemQueryTier returned BLOCKED for file.patch
+
+**Blockers:** Unknown tool: file.patch
+
+**Recovery Route:** Try next tier or escalate to human.
+
+---
+
+## [2026-07-17T20:24:25.548359]
+**Thought:** TimeRemindersTier returned BLOCKED for file.patch
+
+**Blockers:** Unknown tool: file.patch
+
+**Recovery Route:** Try next tier or escalate to human.
+
+---
+
+## [2026-07-17T20:24:25.559657]
+**Thought:** TerminalTier returned BLOCKED for file.read
+
+**Blockers:** Unknown tool: file.read
+
+**Recovery Route:** Try next tier or escalate to human.
+
+---
+
+## [2026-07-17T20:24:25.563613]
+**Thought:** SystemQueryTier returned BLOCKED for file.read
+
+**Blockers:** Unknown tool: file.read
+
+**Recovery Route:** Try next tier or escalate to human.
+
+---
+
+## [2026-07-17T20:24:25.567296]
+**Thought:** TimeRemindersTier returned BLOCKED for file.read
+
+**Blockers:** Unknown tool: file.read
+
+**Recovery Route:** Try next tier or escalate to human.
+
+---
+
+## [2026-07-17T20:24:25.574175]
+**Thought:** TerminalTier returned BLOCKED for process.is_running
+
+**Blockers:** Unknown tool: process.is_running
+
+**Recovery Route:** Try next tier or escalate to human.
+
+---
+
+## [2026-07-17T20:24:25.619670]
+**Thought:** TerminalTier returned BLOCKED for process.is_running
+
+**Blockers:** Unknown tool: process.is_running
+
+**Recovery Route:** Try next tier or escalate to human.
+
+---
+
+## [2026-07-17T20:24:25.645885]
+**Thought:** TerminalTier returned BLOCKED for reminder.create
+
+**Blockers:** Unknown tool: reminder.create
+
+**Recovery Route:** Try next tier or escalate to human.
+
+---
+
+## [2026-07-17T20:24:25.650943]
+**Thought:** SystemQueryTier returned BLOCKED for reminder.create
+
+**Blockers:** Unknown tool: reminder.create
+
+**Recovery Route:** Try next tier or escalate to human.
+
+---
+
+## [2026-07-17T20:24:25.666233]
+**Thought:** TerminalTier returned BLOCKED for reminder.list
+
+**Blockers:** Unknown tool: reminder.list
+
+**Recovery Route:** Try next tier or escalate to human.
+
+---
+
+## [2026-07-17T20:24:25.669368]
+**Thought:** SystemQueryTier returned BLOCKED for reminder.list
+
+**Blockers:** Unknown tool: reminder.list
+
+**Recovery Route:** Try next tier or escalate to human.
+
+---
+
+## [2026-07-17T20:24:25.676375]
+**Thought:** TerminalTier returned BLOCKED for reminder.cancel
+
+**Blockers:** Unknown tool: reminder.cancel
+
+**Recovery Route:** Try next tier or escalate to human.
+
+---
+
+## [2026-07-17T20:24:25.681437]
+**Thought:** SystemQueryTier returned BLOCKED for reminder.cancel
+
+**Blockers:** Unknown tool: reminder.cancel
+
+**Recovery Route:** Try next tier or escalate to human.
+
+---
+
+## [2026-07-17T20:24:25.692376]
+**Thought:** TerminalTier returned BLOCKED for file.read
+
+**Blockers:** Unknown tool: file.read
+
+**Recovery Route:** Try next tier or escalate to human.
+
+---
+
+## [2026-07-17T20:24:25.698734]
+**Thought:** SystemQueryTier returned BLOCKED for file.read
+
+**Blockers:** Unknown tool: file.read
+
+**Recovery Route:** Try next tier or escalate to human.
+
+---
+
+## [2026-07-17T20:24:25.703666]
+**Thought:** TimeRemindersTier returned BLOCKED for file.read
+
+**Blockers:** Unknown tool: file.read
+
+**Recovery Route:** Try next tier or escalate to human.
+
+---
+
+## [2026-07-17T20:24:25.707682]
+**Thought:** Guardrail blocked file.read in FileIOTier
+
+**Blockers:** Guardrail violation in FileIOTier
+
+**Recovery Route:** Escalating to human — this request violates safety guardrails.
+
+---
+
+## [2026-07-17T20:24:25.734859]
+**Thought:** TerminalTier returned BLOCKED for database.query
+
+**Blockers:** Unknown tool: database.query
+
+**Recovery Route:** Try next tier or escalate to human.
+
+---
+
+## [2026-07-17T20:24:25.737610]
+**Thought:** SystemQueryTier returned BLOCKED for database.query
+
+**Blockers:** Unknown tool: database.query
+
+**Recovery Route:** Try next tier or escalate to human.
+
+---
+
+## [2026-07-17T20:24:25.740535]
+**Thought:** TimeRemindersTier returned BLOCKED for database.query
+
+**Blockers:** Unknown tool: database.query
+
+**Recovery Route:** Try next tier or escalate to human.
+
+---
+
+## [2026-07-17T20:24:25.744638]
+**Thought:** FileIOTier returned BLOCKED for database.query
+
+**Blockers:** Unknown tool: database.query
+
+**Recovery Route:** Try next tier or escalate to human.
+
+---
+
+## [2026-07-17T20:24:25.747532]
+**Thought:** All tiers exhausted for database.query
+
+**Blockers:** No tier could handle the request.
+
+**Recovery Route:** Escalating to human — no tier available or capable.
+
+---
